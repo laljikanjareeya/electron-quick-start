@@ -1,12 +1,30 @@
 // Modules to control application life and create native browser window
 const {app, BrowserWindow} = require('electron')
+const { Spanner } = require('@google-cloud/spanner')
 const path = require('path')
+const projectId = 'my-project';
+const instanceId = 'my-instance';
+const databaseId = 'sample-db';
+const spanner = new Spanner({ config: projectId });
+const instance = spanner.instance(instanceId);
+const database = instance.database(databaseId);
+
+///spanner Get Data from Table
+async function getData() {
+  const query = {
+    sql: 'SELECT * from my-table',
+  };
+
+  const [rows] = await database.run(query);
+  rows.forEach(row => console.log(row));
+}
 
 // Keep a global reference of the window object, if you don't, the window will
 // be closed automatically when the JavaScript object is garbage collected.
 let mainWindow
 
 function createWindow () {
+  getData().catch(console.error);
   // Create the browser window.
   mainWindow = new BrowserWindow({
     width: 800,
